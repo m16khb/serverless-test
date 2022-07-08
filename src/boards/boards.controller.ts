@@ -23,6 +23,7 @@ export class BoardsController {
 
   @Get('/:title')
   async getBoard(@Param('title') title: string, @Res() res: any) {
+    this.printWinstonLog(title);
     const board = await this.boardsService.getBoard(title);
     return (
       res
@@ -97,6 +98,9 @@ export class BoardsController {
   }
 
   private printWinstonLog(test: string) {
+    this.logger.log(test);
+    this.logger.log(test, test);
+    this.logger.log(test, { test: test });
     this.logger.error(test);
     this.logger.warn(test);
     this.logger.verbose(test);

@@ -14,7 +14,6 @@ import {
 import * as winston from 'winston';
 
 const express = require('express');
-
 // NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this
 // is likely due to a compressed response (e.g. gzip) which has not
 // been handled correctly by aws-serverless-express and/or API
@@ -36,15 +35,19 @@ async function bootstrapServer(): Promise<Server> {
             new winston.transports.Console({
               level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
               format: winston.format.combine(
-                winston.format.uncolorize({}),
-                winston.format.simple(),
-                winston.format.label({ label: 'serverless-test' }),
+                // winston.format.uncolorize({}),
+                // winston.format.simple(),
                 winston.format.timestamp(),
-                winston.format.printf(
-                  ({ level, message, label, timestamp }) => {
-                    return `${timestamp} [${label}] ${level}: ${message}`;
-                  },
-                ),
+                winston.format.label({ label: 'serverless-test' }),
+                winston.format.printf(({ level, message, context }) => {
+                  return context
+                    ? JSON.stringify({
+                        level: level,
+                        message: message,
+                        context: context,
+                      })
+                    : JSON.stringify({ level: level, message: message });
+                }),
               ),
             }),
           ],
